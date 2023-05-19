@@ -25,7 +25,7 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
+        client.connect();
         const galleryCollection = client.db('turbo-Drive').collection('gallery');
         const toyCollection = client.db('turbo-Drive').collection('toys');
         app.get('/gallery', async(req, res) => {
@@ -34,7 +34,12 @@ async function run() {
         })
 
         app.get('/toys', async(req, res) => {
-            const result = await toyCollection.find().toArray();
+            console.log(req.query);
+            let query = {};
+            if(req.query.email || req.query.category){
+                query = req.query;
+            }
+            const result = await toyCollection.find(query).toArray();
             res.send(result)
         })
 
@@ -43,6 +48,8 @@ async function run() {
             const result = await toyCollection.insertOne(toy);
             res.send(result)
         })
+
+        
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
