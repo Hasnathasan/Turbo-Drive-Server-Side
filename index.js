@@ -62,6 +62,20 @@ async function run() {
             const result = await toyCollection.deleteOne(query);
             res.send(result)
         })
+        app.patch('/toys/:id', async(req, res) => {
+            const id = req.params.id;
+            const product = req.body;
+            const filter = { _id: new ObjectId(id)}
+            const updatedProduct = {
+                $set: {
+                    price: product.price,
+                    quantity: product.quantity,
+                    description: product.description
+                }
+            }
+            const result = await toyCollection.updateOne(filter, updatedProduct);
+            res.send(result)
+        })
 
         
         // Send a ping to confirm a successful connection
