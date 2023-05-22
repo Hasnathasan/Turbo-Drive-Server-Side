@@ -41,14 +41,7 @@ async function run() {
             res.send(result)
         })
         
-        app.get('/serchedJobs', async (req, res) => {
-            const serchedText = req.query.serchedText;
-            const email = req.query.email;
-            console.log(serchedText);
-            console.log(email);
-            const result = await toyCollection.find({ email: email, productName: { $regex: serchedText, $options: "i" }}).toArray();
-            res.send(result);
-        })
+        
         app.get('/toys', async(req, res) => {
             console.log(req.query);
             let query = {};
