@@ -28,18 +28,41 @@ async function run() {
         client.connect();
         const galleryCollection = client.db('turbo-Drive').collection('gallery');
         const toyCollection = client.db('turbo-Drive').collection('toys');
+        const indexKeys = { productName: 1};
+        const indexOptions = { name: "productName"};
+        const result = await toyCollection.createIndex(indexKeys, indexOptions)
+
+        
+        
+        
+        
         app.get('/gallery', async(req, res) => {
             const result = await galleryCollection.find().toArray();
             res.send(result)
         })
-
+        
+        app.get('/serchedJobs', async (req, res) => {
+            const serchedText = req.query.serchedText;
+            const email = req.query.email;
+            console.log(serchedText);
+            console.log(email);
+            const result = await toyCollection.find({ email: email, productName: { $regex: serchedText, $options: "i" }}).toArray();
+            res.send(result);
+        })
         app.get('/toys', async(req, res) => {
             console.log(req.query);
             let query = {};
-            if(req.query.email || req.query.category){
-                query = req.query;
+            let sortedBy = {};
+            if(req.query.email){
+                query = {email: req.query.email};
+                if(req.query.sort){
+                    sortedBy = { price: parseInt(req.query.sort)};
+                }
+            }else if(req.query.category){
+                query = {category: req.query.category}
             }
-            const result = await toyCollection.find(query).toArray();
+            
+            const result = await toyCollection.find(query).sort(sortedBy).limit(20).toArray();
             res.send(result)
         })
 
